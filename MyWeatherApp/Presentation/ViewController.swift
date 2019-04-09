@@ -20,20 +20,23 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         let defaults = UserDefaults.standard
-//        self.myweatherList = defaults.array(forKey: "SavedStringArray") as? [List] ?? [List]()
+        
         self.myCityName = defaults.string(forKey: "cityNameKey") ?? ""
-//        let decoded  = UserDefaults.standard.object(forKey: "SavedStringArray") as? Data ??
-//        myweatherList = NSKeyedUnarchiver.unarchiveObject(with: decoded ?? [List]() ) as? [List] ?? [List]()
+
+        let jsonDecoder = JSONDecoder()
+        let jsonData = defaults.object(forKey: "MyArrayJsonKey")
+        
+        if let jsonData = jsonData as? Data {
+            let decodeData = try! jsonDecoder.decode([List].self, from: jsonData)
+            self.myweatherList = decodeData as? [List] ?? [List]()
+        } else{
+
+            
+        }
         self.cityLabel.text = self.myCityName
         weatherCollectionView.dataSource = self
         weatherCollectionView.delegate = self
-//        APIManager.getWeatherInfoIn(place: "London") { (array) in
-//            self.myweatherList = array
-//            print("MyWeatherArrayCount!!!! = \(self.myweatherList.count)")
-//            DispatchQueue.main.async {
-//                self.weatherCollectionView.reloadData()
-//            }
-//        }
+
         print("MyWeatherArrayCount!!!! = \(myweatherList.count)")
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -73,21 +76,26 @@ extension ViewController: UITextFieldDelegate {
         guard  let text = textField.text else { return false }
         APIManager.getWeatherInfoIn(place: text) { (array, cityName) in
             self.myweatherList = array
-//            let encodedData = NSKeyedArchiver.archivedData(withRootObject: self.myweatherList)
-              let defaults = UserDefaults.standard
-//            defaults.set(self.myweatherList, forKey: "SavedStringArray")
-//            defaults.set(encodedData, forKey: "SavedStringArray")
+            self.myCityName = cityName
+            let defaults = UserDefaults.standard
+
+            let jsonEncoder = JSONEncoder()
+                let jsonData = try! jsonEncoder.encode(array)
+                let jsonString = String(data: jsonData, encoding: .utf8)
+                print("JSON String : " + jsonString!)
+                
+            defaults.set(jsonData, forKey: "MyArrayJsonKey")
             defaults.set(cityName, forKey: "cityNameKey")
             print("MyWeatherArrayCount!!!! = \(self.myweatherList.count)")
             DispatchQueue.main.async {
                 self.weatherCollectionView.reloadData()
-//                self.cityLabel.text = self.myweatherList.first?.name
-                self.myCityName = cityName
                 self.cityLabel.text = self.myCityName
                 self.cityLabel.reloadInputViews()
             }
         }
-        textField.resignFirstResponder()
+
+            textField.resignFirstResponder()
+            
         return true
     }
     

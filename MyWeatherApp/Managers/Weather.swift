@@ -8,14 +8,13 @@
 
 import Foundation
 
-struct List {
+struct List : Codable {
     var name : String?
     var dt : Int
     var temp : Double
     var speed : Double
     var icon : String?
     init(dictionary: Dictionary <String, Any>){
-//        name = dictionary["name"] as? String ?? "error name"
         dt = dictionary["dt"] as? Int ?? 0
         temp = (dictionary["main"] as? [String : Any] ?? ["":""])["temp"] as? Double ?? 0
         speed = (dictionary["wind"] as? [String : Any] ?? ["":""])["speed"] as? Double ?? 0
