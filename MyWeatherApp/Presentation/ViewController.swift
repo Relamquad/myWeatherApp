@@ -7,22 +7,27 @@
 //
 
 import UIKit
+import Charts
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var txtSearch: UITextField!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var weatherCollectionView: UICollectionView!
+    @IBOutlet weak var lineChartView: LineChartView!
     
     var array = ["First", "Second", "Third", "Fourth", "Fifth", "Seven", "Eight", "Nine"]
     var myweatherList : Array = [List]()
     var myCityName = ""
+    var arrayTemp : [Double] = []
+    var arrayDate : [Int] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
         let defaults = UserDefaults.standard
         
         self.myCityName = defaults.string(forKey: "cityNameKey") ?? ""
-
+        
         let jsonDecoder = JSONDecoder()
         let jsonData = defaults.object(forKey: "MyArrayJsonKey")
         
@@ -30,9 +35,22 @@ class ViewController: UIViewController {
             let decodeData = try! jsonDecoder.decode([List].self, from: jsonData)
             self.myweatherList = decodeData as? [List] ?? [List]()
         } else{
-
-            
+          
         }
+        self.arrayTemp = defaults.array(forKey: "TempArrayKey")  as? [Double] ?? [Double]()
+        self.arrayDate = defaults.array(forKey: "TempDateKey")  as? [Int] ?? [Int]()
+//        var returnArray: [List] = []
+//        for temp in self.myweatherList {
+//            let newWeather = myweatherList[returnArray]
+//            returnArray.append(newWeather)
+//        }
+//        for temp in 0...39 {
+//            let getInfo = myweatherList[temp]
+//            arrayTemp.append(getInfo.temp)
+//            arrayDate.append(getInfo.dt)
+//
+//
+//        }
         self.cityLabel.text = self.myCityName
         weatherCollectionView.dataSource = self
         weatherCollectionView.delegate = self
@@ -51,7 +69,6 @@ extension ViewController : UICollectionViewDataSource, UICollectionViewDelegate 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let itemCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCellID", for: indexPath) as! CollectionViewCell
         let myWeatherArray = myweatherList[indexPath.row]
-        
         let date = Date(timeIntervalSince1970: Double(myWeatherArray.dt))
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
@@ -87,6 +104,19 @@ extension ViewController: UITextFieldDelegate {
             defaults.set(jsonData, forKey: "MyArrayJsonKey")
             defaults.set(cityName, forKey: "cityNameKey")
             print("MyWeatherArrayCount!!!! = \(self.myweatherList.count)")
+            
+            for temp in array.count {
+                let getInfo = array[temp]
+                self.arrayTemp.append(getInfo.temp)
+                self.arrayDate.append(getInfo.dt)
+                
+            }
+            
+            defaults.set(self.arrayTemp, forKey: "TempArrayKey")
+            defaults.set(self.arrayDate, forKey: "TempDateKey")
+
+            
+            print("ArrayTemp == \(self.arrayTemp)\n\n ArrayDate == \(self.arrayDate)")
             DispatchQueue.main.async {
                 self.weatherCollectionView.reloadData()
                 self.cityLabel.text = self.myCityName

@@ -116,7 +116,7 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="Ksa-A3-X6k"/>
                                 </connections>
                             </textField>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YZg-MK-4Mx">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YZg-MK-4Mx" customClass="LineChartView" customModule="Charts">
                                 <rect key="frame" x="0.0" y="411" width="375" height="256"/>
                                 <color key="backgroundColor" red="0.48400444944094501" green="1" blue="0.92125806843616487" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
@@ -147,6 +147,7 @@
                     <navigationItem key="navigationItem" title="Weather" id="sVp-ET-Zsx"/>
                     <connections>
                         <outlet property="cityLabel" destination="TBO-Ie-ihN" id="9Bz-CX-WlS"/>
+                        <outlet property="lineChartView" destination="YZg-MK-4Mx" id="OBT-aB-Puf"/>
                         <outlet property="txtSearch" destination="bUT-aX-SEx" id="6un-e0-Q3N"/>
                         <outlet property="weatherCollectionView" destination="5gb-df-nWt" id="3FB-dT-ycT"/>
                     </connections>

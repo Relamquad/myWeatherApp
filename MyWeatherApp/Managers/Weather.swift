@@ -9,7 +9,6 @@
 import Foundation
 
 struct List : Codable {
-    var name : String?
     var dt : Int
     var temp : Double
     var speed : Double
@@ -21,4 +20,10 @@ struct List : Codable {
         icon = (dictionary["weather"] as? [Dictionary<String, Any>] ?? []).first?["icon"] as? String ?? "error icon"
     }
 
+}
+
+extension Int: Sequence {
+    public func makeIterator() -> CountableRange<Int>.Iterator {
+        return (0..<self).makeIterator()
+    }
 }
