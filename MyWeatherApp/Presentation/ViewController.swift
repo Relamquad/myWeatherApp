@@ -104,7 +104,8 @@ extension ViewController: UITextFieldDelegate {
             defaults.set(jsonData, forKey: "MyArrayJsonKey")
             defaults.set(cityName, forKey: "cityNameKey")
             print("MyWeatherArrayCount!!!! = \(self.myweatherList.count)")
-            
+            self.arrayTemp = []
+            self.arrayDate = []
             for temp in array.count {
                 let getInfo = array[temp]
                 self.arrayTemp.append(getInfo.temp)
