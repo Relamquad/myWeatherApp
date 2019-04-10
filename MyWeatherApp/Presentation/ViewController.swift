@@ -10,25 +10,25 @@ import UIKit
 import Charts
 
 class ViewController: UIViewController {
-
+    //MARK: - IBOutlets
     @IBOutlet weak var txtSearch: UITextField!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var weatherCollectionView: UICollectionView!
     @IBOutlet weak var lineChartView: LineChartView!
-    
-    var array = ["First", "Second", "Third", "Fourth", "Fifth", "Seven", "Eight", "Nine"]
+   
+    //MARK: - variables
     var myweatherList : Array = [List]()
     var myCityName = ""
     var arrayTemp : [Double] = []
     var arrayDate : [Int] = []
-
+   
+    //MARK: - VC actions and life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         lineChartView.chartDescription?.enabled = false
         let defaults = UserDefaults.standard
-        
+        //setting from userdefaults
         self.myCityName = defaults.string(forKey: "cityNameKey") ?? ""
-        
         let jsonDecoder = JSONDecoder()
         let jsonData = defaults.object(forKey: "MyArrayJsonKey")
         
@@ -48,10 +48,8 @@ class ViewController: UIViewController {
 
         print("MyWeatherArrayCount!!!! = \(myweatherList.count)")
         setChart(dataPoints: self.arrayDate, values: self.arrayTemp)
-        // Do any additional setup after loading the view, typically from a nib.
     }
   
-
 }
 extension ViewController : UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -66,7 +64,7 @@ extension ViewController : UICollectionViewDataSource, UICollectionViewDelegate 
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
         dateFormatter.locale = NSLocale.current
         dateFormatter.dateFormat = "dd.MM HH:mm" //Specify your format that you want
-        var strDate = dateFormatter.string(from: date)
+        let strDate = dateFormatter.string(from: date)
         itemCell.dateLabel.text = String(strDate)
         itemCell.tempLabel.text = String(Int(myWeatherArray.temp))
         itemCell.windLabel.text = String(myWeatherArray.speed)
@@ -84,6 +82,7 @@ extension ViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         guard  let text = textField.text else { return false }
         APIManager.getWeatherInfoIn(place: text) { (array, cityName) in
+            //accepting weather and saving it to userdefaults
             self.myweatherList = array
             self.myCityName = cityName
             let defaults = UserDefaults.standard
@@ -96,19 +95,16 @@ extension ViewController: UITextFieldDelegate {
             defaults.set(jsonData, forKey: "MyArrayJsonKey")
             defaults.set(cityName, forKey: "cityNameKey")
             print("MyWeatherArrayCount!!!! = \(self.myweatherList.count)")
+            //circle for appeding arrays temp and date for charts nad saving them to userdefaults
             self.arrayTemp = []
             self.arrayDate = []
             for temp in array.count {
                 let getInfo = array[temp]
                 self.arrayTemp.append(getInfo.temp)
                 self.arrayDate.append(getInfo.dt)
-                
             }
-            
             defaults.set(self.arrayTemp, forKey: "TempArrayKey")
             defaults.set(self.arrayDate, forKey: "TempDateKey")
-
-            
             print("ArrayTemp == \(self.arrayTemp)\n\n ArrayDate == \(self.arrayDate)")
             DispatchQueue.main.async {
                 self.weatherCollectionView.reloadData()
@@ -117,9 +113,7 @@ extension ViewController: UITextFieldDelegate {
                 self.setChart(dataPoints: self.arrayDate, values: self.arrayTemp)
             }
         }
-
             textField.resignFirstResponder()
-            
         return true
     }
     
@@ -128,7 +122,7 @@ extension ViewController: UITextFieldDelegate {
         return true
     }
     
-    
+    //MARK: - func set Chart
     func setChart(dataPoints: [Int], values: [Double]) {
         
         var dataEntries: [ChartDataEntry] = []
@@ -143,7 +137,7 @@ extension ViewController: UITextFieldDelegate {
         lineChartDataSet.colors = [NSUIColor.blue]
         let lineChartData = LineChartData(dataSet: lineChartDataSet)
         lineChartView.data = lineChartData
-        
+        // circle for appending dataArray date with format type string from int timestamp format
         var dateArray : [String] = []
         for i in 0..<dataPoints.count {
             let date = Date(timeIntervalSince1970: Double(dataPoints[i]))
@@ -155,7 +149,7 @@ extension ViewController: UITextFieldDelegate {
             dateArray.append(strDate)
         }
 
-        
+        //x Axis
         lineChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: dateArray)
         
 }
