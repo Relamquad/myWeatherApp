@@ -24,6 +24,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        lineChartView.chartDescription?.enabled = false
         let defaults = UserDefaults.standard
         
         self.myCityName = defaults.string(forKey: "cityNameKey") ?? ""
@@ -39,23 +40,14 @@ class ViewController: UIViewController {
         }
         self.arrayTemp = defaults.array(forKey: "TempArrayKey")  as? [Double] ?? [Double]()
         self.arrayDate = defaults.array(forKey: "TempDateKey")  as? [Int] ?? [Int]()
-//        var returnArray: [List] = []
-//        for temp in self.myweatherList {
-//            let newWeather = myweatherList[returnArray]
-//            returnArray.append(newWeather)
-//        }
-//        for temp in 0...39 {
-//            let getInfo = myweatherList[temp]
-//            arrayTemp.append(getInfo.temp)
-//            arrayDate.append(getInfo.dt)
-//
-//
-//        }
+
+        
         self.cityLabel.text = self.myCityName
         weatherCollectionView.dataSource = self
         weatherCollectionView.delegate = self
 
         print("MyWeatherArrayCount!!!! = \(myweatherList.count)")
+        setChart(dataPoints: self.arrayDate, values: self.arrayTemp)
         // Do any additional setup after loading the view, typically from a nib.
     }
   
@@ -122,6 +114,7 @@ extension ViewController: UITextFieldDelegate {
                 self.weatherCollectionView.reloadData()
                 self.cityLabel.text = self.myCityName
                 self.cityLabel.reloadInputViews()
+                self.setChart(dataPoints: self.arrayDate, values: self.arrayTemp)
             }
         }
 
@@ -134,4 +127,36 @@ extension ViewController: UITextFieldDelegate {
         textField.text = ""
         return true
     }
+    
+    
+    func setChart(dataPoints: [Int], values: [Double]) {
+        
+        var dataEntries: [ChartDataEntry] = []
+        
+        for i in 0..<dataPoints.count {
+            let dataEntry = ChartDataEntry(x: Double(i), y: values[i])
+            dataEntries.append(dataEntry)
+        }
+        
+        
+        let lineChartDataSet = LineChartDataSet(values: dataEntries, label: "temperature °C")
+        lineChartDataSet.colors = [NSUIColor.blue]
+        let lineChartData = LineChartData(dataSet: lineChartDataSet)
+        lineChartView.data = lineChartData
+        
+        var dateArray : [String] = []
+        for i in 0..<dataPoints.count {
+            let date = Date(timeIntervalSince1970: Double(dataPoints[i]))
+            let dateFormatter = DateFormatter()
+            dateFormatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
+            dateFormatter.locale = NSLocale.current
+            dateFormatter.dateFormat = "dd MMM\nHH:mm" //Specify your format that you want
+            let strDate = dateFormatter.string(from: date)
+            dateArray.append(strDate)
+        }
+
+        
+        lineChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: dateArray)
+        
+}
 }
