@@ -162,7 +162,6 @@ extension ViewController: UITextFieldDelegate {
 
 extension ViewController: ChartViewDelegate{
     func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-        let index = chartView.data?.dataSets.first?.entryIndex(entry: entry) ?? 0
         let indexPath = IndexPath(item: Int(entry.x), section: 0)
         weatherCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
          print(entry.x)
