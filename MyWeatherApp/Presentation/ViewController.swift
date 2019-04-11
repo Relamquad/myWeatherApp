@@ -68,6 +68,8 @@ extension ViewController : UICollectionViewDataSource, UICollectionViewDelegate 
         dateFormatter.locale = NSLocale.current
         dateFormatter.dateFormat = "dd.MM HH:mm" //Specify your format that you want
         let strDate = dateFormatter.string(from: date)
+        itemCell.layer.borderColor = UIColor.gray.cgColor
+        itemCell.layer.borderWidth = 0.5
         itemCell.dateLabel.text = String(strDate)
         itemCell.tempLabel.text = String(Int(myWeatherArray.temp))
         itemCell.windLabel.text = String(myWeatherArray.speed)
@@ -83,7 +85,7 @@ extension ViewController : UICollectionViewDataSource, UICollectionViewDelegate 
 extension ViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        guard  let text = textField.text else { return false }
+        guard  let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return false }
         APIManager.getWeatherInfoIn(place: text) { (array, cityName) in
             //accepting weather and saving it to userdefaults
             self.myweatherList = array
