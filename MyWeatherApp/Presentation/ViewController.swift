@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         lineChartView.chartDescription?.enabled = false
+        lineChartView.backgroundColor = UIColor(red: 203/255, green: 233/255, blue: 235/255, alpha: 1)
         let defaults = UserDefaults.standard
         //setting from userdefaults
         self.myCityName = defaults.string(forKey: "cityNameKey") ?? ""
@@ -45,6 +46,8 @@ class ViewController: UIViewController {
         self.cityLabel.text = self.myCityName
         weatherCollectionView.dataSource = self
         weatherCollectionView.delegate = self
+        self.lineChartView.delegate = self
+
 
         print("MyWeatherArrayCount!!!! = \(myweatherList.count)")
         setChart(dataPoints: self.arrayDate, values: self.arrayTemp)
@@ -153,4 +156,13 @@ extension ViewController: UITextFieldDelegate {
         lineChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: dateArray)
         
 }
+}
+
+extension ViewController: ChartViewDelegate{
+    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+        let index = chartView.data?.dataSets.first?.entryIndex(entry: entry) ?? 0
+        let indexPath = IndexPath(item: Int(entry.x), section: 0)
+        weatherCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+         print(entry.x)
+    }
 }
